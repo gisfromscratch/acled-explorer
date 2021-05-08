@@ -46,6 +46,8 @@ class FeatureTableModel : public QAbstractTableModel
 public:
     explicit FeatureTableModel(Esri::ArcGISRuntime::FeatureTable *featureTable, QObject *parent = nullptr);
 
+    Q_INVOKABLE QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
+
     int rowCount(const QModelIndex &parent) const override;
     int columnCount(const QModelIndex &parent) const override;
     QVariant data(const QModelIndex &index, int role) const override;
@@ -63,6 +65,7 @@ private:
     QHash<int, QByteArray> m_roleNames;
     Esri::ArcGISRuntime::FeatureTable *m_featureTable = nullptr;
     QList<Esri::ArcGISRuntime::Feature*> m_features;
+    QStringList m_attributeNames;
     int m_attributeCount = 0;
     qint64 m_featureCount = 0;
 };

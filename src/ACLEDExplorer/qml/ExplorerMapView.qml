@@ -1,3 +1,5 @@
+import QtQuick 2.12
+
 import Esri.ACLEDExplorer 1.0
 
 /*!

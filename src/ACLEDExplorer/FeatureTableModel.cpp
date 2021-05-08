@@ -41,6 +41,35 @@ FeatureTableModel::FeatureTableModel(FeatureTable *featureTable, QObject *parent
     queryAllFeatures();
 }
 
+QVariant FeatureTableModel::headerData(int section, Qt::Orientation orientation, int role) const
+{
+    // Attribute names for the column header
+    if (Qt::Orientation::Horizontal == orientation)
+    {
+        if (m_attributeCount <= section)
+        {
+            qWarning() << "Section index is invalid!";
+            return QVariant();
+        }
+
+        return m_attributeNames[section];
+    }
+
+    // OBJECTIDs for the row header
+    if (Qt::Orientation::Vertical == orientation)
+    {
+        if (m_featureCount <= section)
+        {
+            qWarning() << "Section index is invalid!";
+            return QVariant();
+        }
+
+        return section;
+    }
+
+    return QVariant();
+}
+
 int FeatureTableModel::rowCount(const QModelIndex &parent) const
 {
     return m_featureCount;
@@ -127,12 +156,13 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
     m_featureCount = m_features.count();
     if (0 == m_featureCount)
     {
-        m_attributeCount = 0;
+        m_attributeNames.clear();
     }
     else
     {
-        m_attributeCount = m_features[0]->attributes()->attributeNames().count();
+        m_attributeNames = m_features[0]->attributes()->attributeNames();
     }
+    m_attributeCount = m_attributeNames.count();
 
     endResetModel();
 }
