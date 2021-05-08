@@ -1,5 +1,7 @@
 <RCC>
     <qresource prefix="/qml">
         <file>main.qml</file>
+        <file>ExplorerMapView.qml</file>
+        <file>ExplorerFeatureTableView.qml</file>
     </qresource>
 </RCC>

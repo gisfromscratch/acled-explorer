@@ -11,15 +11,9 @@
 // See the Sample code usage restrictions document for further information.
 //
 
-import QtQuick 2.12 as Quick
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 import QtQuick.Layouts 1.12
-
-import Esri.ACLEDExplorer 1.0
-import Esri.FeatureTableModel 1.0
-
-import Qt.labs.qmlmodels 1.0
 
 ApplicationWindow {
     id: appWindow
@@ -37,63 +31,12 @@ ApplicationWindow {
     ColumnLayout {
         anchors.fill: parent
 
-        ACLEDExplorer {
+        ExplorerMapView {
             id: explorerView
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-
-            // Create MapQuickView here, and create its Map etc. in C++ code
-            MapView {
-                anchors.fill: parent
-                objectName: "mapView"
-                // set focus to enable keyboard navigation
-                focus: true
-            }
         }
 
-        Quick.TableView {
-            id: tableView
-            Layout.fillHeight: true
-            Layout.fillWidth: true
-            columnSpacing: 1
-            rowSpacing: 1
-            clip: true
-
-            model: explorerView.featureTableModel
-
-            /*
-            model: TableModel {
-                TableModelColumn { display: "name" }
-                TableModelColumn { display: "color" }
-
-                rows: [
-                    {
-                        "name": "cat",
-                        "color": "black"
-                    },
-                    {
-                        "name": "dog",
-                        "color": "brown"
-                    },
-                    {
-                        "name": "bird",
-                        "color": "white"
-                    }
-                ]
-            }
-            */
-
-            delegate: Quick.Rectangle {
-                implicitWidth: 100
-                implicitHeight: 50
-                border.width: 1
-                color: "#d3c2a6"
-
-                Quick.Text {
-                    text: display
-                    anchors.centerIn: parent
-                }
-            }
+        ExplorerFeatureTableView {
+            featureTableModel: explorerView.featureTableModel
         }
 
     }
