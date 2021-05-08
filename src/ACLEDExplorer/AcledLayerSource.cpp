@@ -22,6 +22,7 @@
 // See <https://developers.arcgis.com/qt/> for further information.
 //
 #include "AcledLayerSource.h"
+#include "FeatureTableModel.h"
 
 #include "FeatureLayer.h"
 #include "ServiceFeatureTable.h"
@@ -33,11 +34,18 @@ AcledLayerSource::AcledLayerSource(QObject *parent) : QObject(parent)
     m_acledFeatureTable = new ServiceFeatureTable(QUrl("https://services.arcgis.com/LG9Yn2oFqZi5PnO5/arcgis/rest/services/Armed_Conflict_Location_Event_Data_ACLED/FeatureServer/0"), this);
     connect(m_acledFeatureTable, &ServiceFeatureTable::doneLoading, this, &AcledLayerSource::doneLoading);
     m_acledFeatureLayer = new FeatureLayer(m_acledFeatureTable, this);
+
+    m_acledFeatureTableModel = new FeatureTableModel(m_acledFeatureTable, this);
 }
 
 FeatureLayer* AcledLayerSource::featureLayer() const
 {
     return m_acledFeatureLayer;
+}
+
+FeatureTableModel* AcledLayerSource::featureTableModel() const
+{
+    return m_acledFeatureTableModel;
 }
 
 void AcledLayerSource::doneLoading(Esri::ArcGISRuntime::Error loadError)
@@ -49,4 +57,5 @@ void AcledLayerSource::doneLoading(Esri::ArcGISRuntime::Error loadError)
     }
 
     qDebug() << "ACLED feature layer loaded";
+    emit layerLoaded();
 }

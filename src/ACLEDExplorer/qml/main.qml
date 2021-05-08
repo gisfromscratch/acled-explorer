@@ -15,7 +15,9 @@ import QtQuick 2.12 as Quick
 import QtQuick.Controls 2.2
 import QtQuick.Controls.Material 2.2
 import QtQuick.Layouts 1.12
+
 import Esri.ACLEDExplorer 1.0
+import Esri.FeatureTableModel 1.0
 
 import Qt.labs.qmlmodels 1.0
 
@@ -36,6 +38,7 @@ ApplicationWindow {
         anchors.fill: parent
 
         ACLEDExplorer {
+            id: explorerView
             Layout.fillHeight: true
             Layout.fillWidth: true
 
@@ -49,12 +52,16 @@ ApplicationWindow {
         }
 
         Quick.TableView {
+            id: tableView
             Layout.fillHeight: true
             Layout.fillWidth: true
             columnSpacing: 1
             rowSpacing: 1
             clip: true
 
+            model: explorerView.featureTableModel
+
+            /*
             model: TableModel {
                 TableModelColumn { display: "name" }
                 TableModelColumn { display: "color" }
@@ -74,6 +81,7 @@ ApplicationWindow {
                     }
                 ]
             }
+            */
 
             delegate: Quick.Rectangle {
                 implicitWidth: 100

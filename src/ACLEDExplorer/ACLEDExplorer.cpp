@@ -9,14 +9,14 @@
 //
 // See the Sample code usage restrictions document for further information.
 //
+#include "ACLEDExplorer.h"
+#include "AcledLayerSource.h"
+#include "FeatureTableModel.h"
 
 #include "Map.h"
 #include "MapQuickView.h"
 #include "Basemap.h"
 #include "FeatureLayer.h"
-
-#include "ACLEDExplorer.h"
-#include "AcledLayerSource.h"
 
 using namespace Esri::ArcGISRuntime;
 
@@ -24,10 +24,16 @@ ACLEDExplorer::ACLEDExplorer(QQuickItem* parent /* = nullptr */):
     QQuickItem(parent),
     m_acledLayerSoure(new AcledLayerSource(this))
 {
+    connect(m_acledLayerSoure, &AcledLayerSource::layerLoaded, this, &ACLEDExplorer::featureTableModelChanged);
 }
 
 ACLEDExplorer::~ACLEDExplorer()
 {
+}
+
+FeatureTableModel* ACLEDExplorer::featureTableModel() const
+{
+    return m_acledLayerSoure->featureTableModel();
 }
 
 void ACLEDExplorer::componentComplete()

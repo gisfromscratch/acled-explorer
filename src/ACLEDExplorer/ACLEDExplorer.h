@@ -25,6 +25,7 @@ class MapQuickView;
 }
 
 class AcledLayerSource;
+class FeatureTableModel;
 
 class ACLEDExplorer : public QQuickItem
 {
@@ -34,7 +35,14 @@ public:
     ACLEDExplorer(QQuickItem* parent = nullptr);
     ~ACLEDExplorer();
 
+    Q_PROPERTY(FeatureTableModel* featureTableModel READ featureTableModel NOTIFY featureTableModelChanged)
+
+    FeatureTableModel* featureTableModel() const;
+
     void componentComplete() override;
+
+signals:
+    void featureTableModelChanged();
 
 private:
     Esri::ArcGISRuntime::Map *m_map = nullptr;

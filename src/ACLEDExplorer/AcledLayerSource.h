@@ -37,6 +37,8 @@ class ServiceFeatureTable;
 }
 }
 
+class FeatureTableModel;
+
 class AcledLayerSource : public QObject
 {
     Q_OBJECT
@@ -44,6 +46,7 @@ public:
     explicit AcledLayerSource(QObject *parent = nullptr);
 
     Esri::ArcGISRuntime::FeatureLayer* featureLayer() const;
+    FeatureTableModel* featureTableModel() const;
 
 signals:
     void layerLoaded();
@@ -54,6 +57,7 @@ private slots:
 private:
     Esri::ArcGISRuntime::FeatureLayer *m_acledFeatureLayer = nullptr;
     Esri::ArcGISRuntime::ServiceFeatureTable *m_acledFeatureTable = nullptr;
+    FeatureTableModel *m_acledFeatureTableModel = nullptr;
 };
 
 #endif // ACLEDLAYERSOURCE_H

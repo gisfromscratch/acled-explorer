@@ -33,6 +33,7 @@
 
 #include "AppInfo.h"
 #include "ACLEDExplorer.h"
+#include "FeatureTableModel.h"
 
 //------------------------------------------------------------------------------
 
@@ -100,6 +101,9 @@ int main(int argc, char *argv[])
 
     // Register the ACLEDExplorer (QQuickItem) for QML
     qmlRegisterType<ACLEDExplorer>("Esri.ACLEDExplorer", 1, 0, "ACLEDExplorer");
+
+    // Register the feature table model
+    qmlRegisterUncreatableType<FeatureTableModel>("Esri.FeatureTableModel", 1, 0, "FeatureTableModel", "Table model representing a feature table.");
 
     // Activate the styling
     QQuickStyle::setStyle("Material");
