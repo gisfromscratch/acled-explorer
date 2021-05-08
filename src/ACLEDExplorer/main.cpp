@@ -18,6 +18,8 @@
 #include <QDir>
 #include <QMessageBox>
 #include <QProcessEnvironment>
+
+#include <QQmlApplicationEngine>
 #include <QQmlEngine>
 #include <QQuickStyle>
 
@@ -103,6 +105,18 @@ int main(int argc, char *argv[])
     QQuickStyle::setStyle("Material");
 
     // Initialize application view
+    QQmlApplicationEngine engine;
+
+    // Add the import Path
+    engine.addImportPath(QDir(QCoreApplication::applicationDirPath()).filePath("qml"));
+
+    // Set the source
+    engine.load(QUrl("qrc:/qml/main.qml"));
+
+    // Old qt quick view style
+
+    /*
+    // Initialize application view
     QQuickView view;
     view.setResizeMode(QQuickView::SizeRootObjectToView);
 
@@ -167,6 +181,8 @@ int main(int argc, char *argv[])
 #else
     view.show();
 #endif
+
+    */
 
     return app.exec();
 }

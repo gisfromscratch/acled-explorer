@@ -11,19 +11,82 @@
 // See the Sample code usage restrictions document for further information.
 //
 
-import QtQuick 2.6
-import QtQuick.Controls 1.4
+import QtQuick 2.12 as Quick
+import QtQuick.Controls 2.2
+import QtQuick.Controls.Material 2.2
+import QtQuick.Layouts 1.12
 import Esri.ACLEDExplorer 1.0
 
-ACLEDExplorer {
+import Qt.labs.qmlmodels 1.0
+
+ApplicationWindow {
+    id: appWindow
+    visible: true
     width: 800
     height: 600
 
-    // Create MapQuickView here, and create its Map etc. in C++ code
-    MapView {
+    Material.theme: Material.Dark
+    Material.accent: "#a7ad6d"      // BW Hellgrün
+    //Material.accent: "#616847"      // BW Helloliv
+    Material.background: "#312d2a"  // BW Schwarz
+    Material.foreground: "#d3c2a6"  // BW Beige
+    Material.primary: "#434a39"     // BW Dunkelgrün
+
+    ColumnLayout {
         anchors.fill: parent
-        objectName: "mapView"
-        // set focus to enable keyboard navigation
-        focus: true
+
+        ACLEDExplorer {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+
+            // Create MapQuickView here, and create its Map etc. in C++ code
+            MapView {
+                anchors.fill: parent
+                objectName: "mapView"
+                // set focus to enable keyboard navigation
+                focus: true
+            }
+        }
+
+        Quick.TableView {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
+            columnSpacing: 1
+            rowSpacing: 1
+            clip: true
+
+            model: TableModel {
+                TableModelColumn { display: "name" }
+                TableModelColumn { display: "color" }
+
+                rows: [
+                    {
+                        "name": "cat",
+                        "color": "black"
+                    },
+                    {
+                        "name": "dog",
+                        "color": "brown"
+                    },
+                    {
+                        "name": "bird",
+                        "color": "white"
+                    }
+                ]
+            }
+
+            delegate: Quick.Rectangle {
+                implicitWidth: 100
+                implicitHeight: 50
+                border.width: 1
+                color: "#d3c2a6"
+
+                Quick.Text {
+                    text: display
+                    anchors.centerIn: parent
+                }
+            }
+        }
+
     }
 }

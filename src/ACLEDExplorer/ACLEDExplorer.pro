@@ -33,10 +33,12 @@ include($$PWD/arcgisruntime.pri)
 HEADERS += \
     AcledLayerSource.h \
     AppInfo.h \
-    ACLEDExplorer.h
+    ACLEDExplorer.h \
+    FeatureTableModel.h
 
 SOURCES += \
     AcledLayerSource.cpp \
+    FeatureTableModel.cpp \
     main.cpp \
     ACLEDExplorer.cpp
 
