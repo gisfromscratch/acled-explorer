@@ -53,6 +53,8 @@ public:
     QVariant data(const QModelIndex &index, int role) const override;
     QHash<int, QByteArray> roleNames() const override;
 
+    Q_INVOKABLE void setSelectedFeature(qint64 selectedFeatureIndex);
+
 signals:
 
 private slots:
@@ -68,6 +70,7 @@ private:
     QStringList m_attributeNames;
     int m_attributeCount = 0;
     qint64 m_featureCount = 0;
+    qint64 m_selectedFeatureIndex = -1;
 };
 
 #endif // FEATURETABLEMODEL_H

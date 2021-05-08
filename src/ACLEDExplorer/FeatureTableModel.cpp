@@ -30,6 +30,7 @@ using namespace Esri::ArcGISRuntime;
 FeatureTableModel::FeatureTableModel(FeatureTable *featureTable, QObject *parent) : QAbstractTableModel(parent)
 {
     m_roleNames.insert(Qt::DisplayRole, "display");
+    m_roleNames.insert(Qt::UserRole + 1, "featureState");
 
     m_featureTable = featureTable;
     if (LoadStatus::Loaded != m_featureTable->loadStatus())
@@ -99,6 +100,8 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const
     {
     case Qt::DisplayRole:
         return feature->attributes()->attributeValue(attributeName);
+    case Qt::UserRole + 1:
+        return (index.row() == m_selectedFeatureIndex) ? QString("selected") : QString("");
     default:
         return QVariant();
     }
@@ -107,6 +110,22 @@ QVariant FeatureTableModel::data(const QModelIndex &index, int role) const
 QHash<int, QByteArray> FeatureTableModel::roleNames() const
 {
     return m_roleNames;
+}
+
+void FeatureTableModel::setSelectedFeature(qint64 selectedFeatureIndex)
+{
+    qint64 lastSelectedFeatureIndex = m_selectedFeatureIndex;
+    m_selectedFeatureIndex = selectedFeatureIndex;
+    if (-1 != lastSelectedFeatureIndex)
+    {
+        // Update all cells from the last selected feature
+        emit dataChanged(index(lastSelectedFeatureIndex, 0), index(lastSelectedFeatureIndex, m_attributeCount - 1));
+    }
+    if (-1 != m_selectedFeatureIndex)
+    {
+        // Update all cells from the new selected feature
+        emit dataChanged(index(m_selectedFeatureIndex, 0), index(m_selectedFeatureIndex, m_attributeCount - 1));
+    }
 }
 
 void FeatureTableModel::queryAllFeatures()
@@ -163,6 +182,7 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
         m_attributeNames = m_features[0]->attributes()->attributeNames();
     }
     m_attributeCount = m_attributeNames.count();
+    m_selectedFeatureIndex = -1;
 
     endResetModel();
 }

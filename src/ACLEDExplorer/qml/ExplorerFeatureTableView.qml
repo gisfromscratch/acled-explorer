@@ -29,7 +29,7 @@ TableView {
         var columnWidth = getColumnWidth(column);
         if (columnWidth < columnMinWidth) {
             columnWidths[column] = columnMinWidth;
-            console.log(column + "," + columnMinWidth);
+            //console.log(column + "," + columnMinWidth);
             //tableView.forceLayout();
         }
     }
@@ -62,7 +62,34 @@ TableView {
         horizontalAlignment: Text.AlignHCenter
         verticalAlignment: Text.AlignVCenter
 
-        background: Rectangle { color: "#434a39" }
+        background: Rectangle {
+            id: backgroundRectangle
+            color: "#434a39"
+
+            state: featureState
+
+            states: [
+                State {
+                    name: "selected"
+                    PropertyChanges { target: backgroundRectangle; color: "#616847" }
+                }
+            ]
+
+            MouseArea {
+                anchors.fill: parent
+                onClicked: {
+                    featureTableModel.setSelectedFeature(model.row);
+                    /*
+                    for (var propName in model) {
+                        console.log(propName + ":" + model[propName]);
+                    }
+                    */
+
+                    //backgroundRectangle.state == 'selected' ? backgroundRectangle.state = "" : backgroundRectangle.state = 'selected';
+                    //console.log(model.row + "," + model.column);
+                }
+            }
+        }
 
         Component.onCompleted: {
             updateColumnWidth(model.column, this.implicitWidth);

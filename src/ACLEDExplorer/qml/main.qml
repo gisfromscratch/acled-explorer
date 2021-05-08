@@ -38,7 +38,7 @@ ApplicationWindow {
         }
 
         ExplorerFeatureTableView {
-            Layout.fillHeight: true
+            height: 300
             Layout.fillWidth: true
             featureTableModel: explorerView.featureTableModel
         }
