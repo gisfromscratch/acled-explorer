@@ -26,6 +26,7 @@
 
 #include<QAbstractTableModel>
 #include <QObject>
+#include <QUuid>
 
 #include "Error.h"
 
@@ -33,6 +34,8 @@ namespace Esri
 {
 namespace ArcGISRuntime
 {
+class Feature;
+class FeatureQueryResult;
 class FeatureTable;
 }
 }
@@ -52,10 +55,15 @@ signals:
 
 private slots:
     void doneLoading(Esri::ArcGISRuntime::Error loadError);
+    void queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime::FeatureQueryResult *featureQueryResult);
 
 private:
+    void queryAllFeatures();
+
     QHash<int, QByteArray> m_roleNames;
     Esri::ArcGISRuntime::FeatureTable *m_featureTable = nullptr;
+    QList<Esri::ArcGISRuntime::Feature*> m_features;
+    int m_attributeCount = 0;
     qint64 m_featureCount = 0;
 };
 

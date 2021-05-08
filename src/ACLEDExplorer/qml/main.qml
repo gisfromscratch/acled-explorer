@@ -33,9 +33,13 @@ ApplicationWindow {
 
         ExplorerMapView {
             id: explorerView
+            Layout.fillHeight: true
+            Layout.fillWidth: true
         }
 
         ExplorerFeatureTableView {
+            Layout.fillHeight: true
+            Layout.fillWidth: true
             featureTableModel: explorerView.featureTableModel
         }
 

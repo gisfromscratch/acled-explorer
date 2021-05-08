@@ -34,26 +34,42 @@ FeatureTableModel::FeatureTableModel(FeatureTable *featureTable, QObject *parent
     m_featureTable = featureTable;
     if (LoadStatus::Loaded != m_featureTable->loadStatus())
     {
-
+        // TODO: Load the feature table
     }
+
+    connect(m_featureTable, &FeatureTable::queryFeaturesCompleted, this, &FeatureTableModel::queryFeaturesCompleted);
+    queryAllFeatures();
 }
 
 int FeatureTableModel::rowCount(const QModelIndex &parent) const
 {
-    return 12;
+    return m_featureCount;
 }
 
 int FeatureTableModel::columnCount(const QModelIndex &parent) const
 {
-    return 5;
+    return m_attributeCount;
 }
 
 QVariant FeatureTableModel::data(const QModelIndex &index, int role) const
 {
+    if (m_featureCount <= index.row())
+    {
+        qWarning() << "Row index is invalid!";
+        return QVariant();
+    }
+    if (m_attributeCount <= index.column())
+    {
+        qWarning() << "Column index is invalid!";
+        return QVariant();
+    }
+
+    Feature *feature = m_features[index.row()];
+    QString attributeName = feature->attributes()->attributeNames()[index.column()];
     switch (role)
     {
     case Qt::DisplayRole:
-        return QString("%1, %2").arg(index.column()).arg(index.row());
+        return feature->attributes()->attributeValue(attributeName);
     default:
         return QVariant();
     }
@@ -64,6 +80,13 @@ QHash<int, QByteArray> FeatureTableModel::roleNames() const
     return m_roleNames;
 }
 
+void FeatureTableModel::queryAllFeatures()
+{
+    QueryParameters queryAllFeaturesParameters;
+    queryAllFeaturesParameters.setWhereClause("1=1");
+    m_featureTable->queryFeatures(queryAllFeaturesParameters);
+}
+
 void FeatureTableModel::doneLoading(Error loadError)
 {
     if (!loadError.isEmpty())
@@ -71,6 +94,45 @@ void FeatureTableModel::doneLoading(Error loadError)
         qCritical() << loadError.message();
         return;
     }
+}
 
+void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime::FeatureQueryResult *featureQueryResult)
+{
+    Q_UNUSED(taskId)
 
+    if (nullptr == featureQueryResult)
+    {
+        return;
+    }
+
+    std::unique_ptr<FeatureQueryResult> featuresQueryResultPtr(featureQueryResult);
+    FeatureIterator featureIterator = featuresQueryResultPtr->iterator();
+    if (!featureIterator.hasNext())
+    {
+        qWarning() << "No features returned by this query!";
+        return;
+    }
+
+    // Updated the whole model
+    beginResetModel();
+
+    // Delete old features
+    if (!m_features.empty())
+    {
+        qDeleteAll(m_features);
+    }
+
+    // Update new features and counts
+    m_features = featureIterator.features(this);
+    m_featureCount = m_features.count();
+    if (0 == m_featureCount)
+    {
+        m_attributeCount = 0;
+    }
+    else
+    {
+        m_attributeCount = m_features[0]->attributes()->attributeNames().count();
+    }
+
+    endResetModel();
 }
