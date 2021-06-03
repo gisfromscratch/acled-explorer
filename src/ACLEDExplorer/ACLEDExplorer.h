@@ -44,6 +44,9 @@ public:
 signals:
     void featureTableModelChanged();
 
+private slots:
+    void featureTableSelectionChanged();
+
 private:
     Esri::ArcGISRuntime::Map *m_map = nullptr;
     Esri::ArcGISRuntime::MapQuickView *m_mapView = nullptr;

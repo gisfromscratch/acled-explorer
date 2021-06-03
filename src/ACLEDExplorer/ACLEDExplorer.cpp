@@ -17,6 +17,7 @@
 #include "MapQuickView.h"
 #include "Basemap.h"
 #include "FeatureLayer.h"
+#include "GeometryEngine.h"
 
 using namespace Esri::ArcGISRuntime;
 
@@ -25,6 +26,7 @@ ACLEDExplorer::ACLEDExplorer(QQuickItem* parent /* = nullptr */):
     m_acledLayerSoure(new AcledLayerSource(this))
 {
     connect(m_acledLayerSoure, &AcledLayerSource::layerLoaded, this, &ACLEDExplorer::featureTableModelChanged);
+    connect(m_acledLayerSoure->featureTableModel(), &FeatureTableModel::featureSelectionChanged, this, &ACLEDExplorer::featureTableSelectionChanged);
 }
 
 ACLEDExplorer::~ACLEDExplorer()
@@ -51,4 +53,32 @@ void ACLEDExplorer::componentComplete()
 
     // Add the ACLED feature layer
     m_map->operationalLayers()->append(m_acledLayerSoure->featureLayer());
+}
+
+void ACLEDExplorer::featureTableSelectionChanged()
+{
+    const QList<Feature*> selectedFeatures = m_acledLayerSoure->featureTableModel()->selectedFeatures();
+    if (!selectedFeatures.empty())
+    {
+        QList<Geometry> centers;
+        for (Feature const* selectedFeature : selectedFeatures)
+        {
+            Geometry geometry = selectedFeature->geometry();
+            if (!geometry.isEmpty())
+            {
+                Point center = geometry.extent().center();
+                centers.append(center);
+            }
+        }
+
+        if (!centers.empty())
+        {
+            Geometry unionOfCenters = GeometryEngine::unionOf(centers);
+            if (!unionOfCenters.isEmpty())
+            {
+                Point center = unionOfCenters.extent().center();
+                m_mapView->setViewpointCenter(center);
+            }
+        }
+    }
 }
