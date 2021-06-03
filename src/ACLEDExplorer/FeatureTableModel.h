@@ -55,7 +55,10 @@ public:
 
     Q_INVOKABLE void setSelectedFeature(qint64 selectedFeatureIndex);
 
+    QList<Esri::ArcGISRuntime::Feature*> selectedFeatures() const;
+
 signals:
+    void featureSelectionChanged();
 
 private slots:
     void doneLoading(Esri::ArcGISRuntime::Error loadError);

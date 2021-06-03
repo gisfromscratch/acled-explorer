@@ -126,6 +126,20 @@ void FeatureTableModel::setSelectedFeature(qint64 selectedFeatureIndex)
         // Update all cells from the new selected feature
         emit dataChanged(index(m_selectedFeatureIndex, 0), index(m_selectedFeatureIndex, m_attributeCount - 1));
     }
+
+    // Emit the selection changed event
+    emit featureSelectionChanged();
+}
+
+QList<Feature*> FeatureTableModel::selectedFeatures() const
+{
+    QList<Feature*> selectedFeatures;
+    if (-1 != m_selectedFeatureIndex)
+    {
+        // Add the corresponding feature
+        selectedFeatures.append(m_features[m_selectedFeatureIndex]);
+    }
+    return selectedFeatures;
 }
 
 void FeatureTableModel::queryAllFeatures()

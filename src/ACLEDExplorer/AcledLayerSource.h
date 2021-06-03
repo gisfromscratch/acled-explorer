@@ -53,6 +53,7 @@ signals:
 
 private slots:
     void doneLoading(Esri::ArcGISRuntime::Error loadError);
+    void featureTableSelectionChanged();
 
 private:
     Esri::ArcGISRuntime::FeatureLayer *m_acledFeatureLayer = nullptr;

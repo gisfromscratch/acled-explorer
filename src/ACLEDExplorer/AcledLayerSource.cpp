@@ -40,6 +40,7 @@ AcledLayerSource::AcledLayerSource(QObject *parent) : QObject(parent)
     m_acledFeatureLayer = new FeatureLayer(m_acledFeatureTable, this);
 
     m_acledFeatureTableModel = new FeatureTableModel(m_acledFeatureTable, this);
+    connect(m_acledFeatureTableModel, &FeatureTableModel::featureSelectionChanged, this, &AcledLayerSource::featureTableSelectionChanged);
 }
 
 FeatureLayer* AcledLayerSource::featureLayer() const
@@ -62,4 +63,14 @@ void AcledLayerSource::doneLoading(Esri::ArcGISRuntime::Error loadError)
 
     qDebug() << "ACLED feature layer loaded";
     emit layerLoaded();
+}
+
+void AcledLayerSource::featureTableSelectionChanged()
+{
+    m_acledFeatureLayer->clearSelection();
+    QList<Feature*> selectedFeatures = m_acledFeatureTableModel->selectedFeatures();
+    if (!selectedFeatures.empty())
+    {
+        m_acledFeatureLayer->selectFeatures(selectedFeatures);
+    }
 }
