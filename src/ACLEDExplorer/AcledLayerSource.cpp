@@ -33,6 +33,10 @@ AcledLayerSource::AcledLayerSource(QObject *parent) : QObject(parent)
 {
     m_acledFeatureTable = new ServiceFeatureTable(QUrl("https://services.arcgis.com/LG9Yn2oFqZi5PnO5/arcgis/rest/services/Armed_Conflict_Location_Event_Data_ACLED/FeatureServer/0"), this);
     connect(m_acledFeatureTable, &ServiceFeatureTable::doneLoading, this, &AcledLayerSource::doneLoading);
+    m_acledFeatureTable->setFeatureRequestMode(FeatureRequestMode::ManualCache);
+    QueryParameters queryAll;
+    queryAll.setWhereClause("1=1");
+    m_acledFeatureTable->populateFromService(queryAll, true, QStringList { "*" });
     m_acledFeatureLayer = new FeatureLayer(m_acledFeatureTable, this);
 
     m_acledFeatureTableModel = new FeatureTableModel(m_acledFeatureTable, this);
