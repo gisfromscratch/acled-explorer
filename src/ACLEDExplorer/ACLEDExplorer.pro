@@ -27,7 +27,8 @@ equals(QT_MAJOR_VERSION, 5) {
 	}
 }
 
-ARCGIS_RUNTIME_VERSION = 100.4
+# On Windows you can use $$() but not $${} like in the arcgis*.pri project file
+ARCGIS_RUNTIME_VERSION = $$(ARCGIS_RUNTIME_VERSION)
 include($$PWD/arcgisruntime.pri)
 
 HEADERS += \
