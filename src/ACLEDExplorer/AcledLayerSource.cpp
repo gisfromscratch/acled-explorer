@@ -32,7 +32,7 @@
 
 using namespace Esri::ArcGISRuntime;
 
-static const bool useManualCaching = true;
+static const bool useManualCaching = false;
 
 AcledLayerSource::AcledLayerSource(QObject *parent) : QObject(parent)
 {
