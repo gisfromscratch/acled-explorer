@@ -30,7 +30,7 @@
 #include <QUuid>
 
 #include "Error.h"
-#include "Envelope.h"
+#include "Geometry.h"
 
 namespace Esri
 {
@@ -58,7 +58,7 @@ public:
     Q_INVOKABLE void setSelectedFeature(qint64 selectedFeatureIndex);
     QList<Esri::ArcGISRuntime::Feature*> selectedFeatures() const;
 
-    void setSpatialFilter(Esri::ArcGISRuntime::Envelope areaOfInterest);
+    void setSpatialFilter(const Esri::ArcGISRuntime::Geometry& spatialFilter);
 
 signals:
     void featureSelectionChanged();
@@ -73,7 +73,7 @@ private:
     QHash<int, QByteArray> m_roleNames;
     Esri::ArcGISRuntime::FeatureTable* m_featureTable = nullptr;
     QList<Esri::ArcGISRuntime::Feature*> m_features;
-    Esri::ArcGISRuntime::Envelope m_areaOfInterest;
+    Esri::ArcGISRuntime::Geometry m_spatialFilter;
     QStringList m_attributeNames;
     int m_attributeCount = 0;
     qint64 m_featureCount = 0;

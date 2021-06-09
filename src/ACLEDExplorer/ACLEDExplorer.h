@@ -46,11 +46,13 @@ signals:
 
 private slots:
     void featureTableSelectionChanged();
+    void navigatingChanged();
 
 private:
     Esri::ArcGISRuntime::Map *m_map = nullptr;
     Esri::ArcGISRuntime::MapQuickView *m_mapView = nullptr;
     AcledLayerSource *m_acledLayerSoure = nullptr;
+    bool m_navigating = false;
 };
 
 #endif // ACLEDEXPLORER_H

@@ -53,6 +53,9 @@ void ACLEDExplorer::componentComplete()
 
     // Add the ACLED feature layer
     m_map->operationalLayers()->append(m_acledLayerSoure->featureLayer());
+
+    // Register navigate slots
+    connect(m_mapView, &MapQuickView::navigatingChanged, this, &ACLEDExplorer::navigatingChanged);
 }
 
 void ACLEDExplorer::featureTableSelectionChanged()
@@ -80,5 +83,22 @@ void ACLEDExplorer::featureTableSelectionChanged()
                 m_mapView->setViewpointCenter(center);
             }
         }
+    }
+}
+
+void ACLEDExplorer::navigatingChanged()
+{
+    m_navigating = !m_navigating;
+    if (m_navigating)
+    {
+        // Start navigating
+    }
+    else
+    {
+        // Finshed navigating
+        Viewpoint currentViewpoint = m_mapView->currentViewpoint(ViewpointType::BoundingGeometry);
+        Geometry envelope = currentViewpoint.targetGeometry();
+        FeatureTableModel* featureTableModel = m_acledLayerSoure->featureTableModel();
+        featureTableModel->setSpatialFilter(envelope);
     }
 }

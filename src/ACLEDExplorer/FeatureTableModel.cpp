@@ -143,9 +143,9 @@ QList<Feature*> FeatureTableModel::selectedFeatures() const
     return selectedFeatures;
 }
 
-void FeatureTableModel::setSpatialFilter(Esri::ArcGISRuntime::Envelope areaOfInterest)
+void FeatureTableModel::setSpatialFilter(const Esri::ArcGISRuntime::Geometry& spatialFilter)
 {
-    m_areaOfInterest = areaOfInterest;
+    m_spatialFilter = spatialFilter;
 }
 
 void FeatureTableModel::queryAllFeatures()
