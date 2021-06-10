@@ -104,7 +104,7 @@ void ACLEDExplorer::navigatingChanged()
         //m_navigatingTimer->start(300);
 
         // TODO: Filters the feature table like crazy!
-        //navigatingFinished();
+        navigatingFinished();
     }
 }
 

@@ -115,6 +115,9 @@ QHash<int, QByteArray> FeatureTableModel::roleNames() const
 
 void FeatureTableModel::setSelectedFeature(qint64 selectedFeatureIndex)
 {
+    // TODO: Remove this
+    return;
+
     qint64 lastSelectedFeatureIndex = m_selectedFeatureIndex;
     m_selectedFeatureIndex = selectedFeatureIndex;
     if (-1 != lastSelectedFeatureIndex)
