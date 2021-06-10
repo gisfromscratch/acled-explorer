@@ -69,6 +69,7 @@ private slots:
 
 private:
     void queryAllFeatures();
+    void queryFeaturesUsingSpatialFilter();
 
     QHash<int, QByteArray> m_roleNames;
     Esri::ArcGISRuntime::FeatureTable* m_featureTable = nullptr;

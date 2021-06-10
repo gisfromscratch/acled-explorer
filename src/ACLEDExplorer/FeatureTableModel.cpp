@@ -146,6 +146,9 @@ QList<Feature*> FeatureTableModel::selectedFeatures() const
 void FeatureTableModel::setSpatialFilter(const Esri::ArcGISRuntime::Geometry& spatialFilter)
 {
     m_spatialFilter = spatialFilter;
+
+    // Query features using spatial filter
+    queryFeaturesUsingSpatialFilter();
 }
 
 void FeatureTableModel::queryAllFeatures()
@@ -153,6 +156,13 @@ void FeatureTableModel::queryAllFeatures()
     QueryParameters queryAllFeaturesParameters;
     queryAllFeaturesParameters.setWhereClause("1=1");
     m_featureTable->queryFeatures(queryAllFeaturesParameters);
+}
+
+void FeatureTableModel::queryFeaturesUsingSpatialFilter()
+{
+    QueryParameters queryFeaturesParameters;
+    queryFeaturesParameters.setGeometry(m_spatialFilter);
+    m_featureTable->queryFeatures(queryFeaturesParameters);
 }
 
 void FeatureTableModel::doneLoading(Error loadError)
@@ -170,14 +180,7 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
 
     if (nullptr == featureQueryResult)
     {
-        return;
-    }
-
-    std::unique_ptr<FeatureQueryResult> featuresQueryResultPtr(featureQueryResult);
-    FeatureIterator featureIterator = featuresQueryResultPtr->iterator();
-    if (!featureIterator.hasNext())
-    {
-        qWarning() << "No features returned by this query!";
+        qWarning() << "Feature query result is invalid!";
         return;
     }
 
@@ -188,19 +191,30 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
     if (!m_features.empty())
     {
         qDeleteAll(m_features);
+        m_features.clear();
     }
 
     // Update new features and counts
-    m_features = featureIterator.features(this);
-    m_featureCount = m_features.count();
-    if (0 == m_featureCount)
+    std::unique_ptr<FeatureQueryResult> featuresQueryResultPtr(featureQueryResult);
+    FeatureIterator featureIterator = featuresQueryResultPtr->iterator();
+    if (featureIterator.hasNext())
     {
-        m_attributeNames.clear();
+        m_features = featureIterator.features(this);
+        m_featureCount = m_features.count();
+        if (0 == m_featureCount)
+        {
+            m_attributeNames.clear();
+        }
+        else
+        {
+            m_attributeNames = m_features[0]->attributes()->attributeNames();
+        }
     }
     else
     {
-        m_attributeNames = m_features[0]->attributes()->attributeNames();
+        m_attributeNames.clear();
     }
+
     m_attributeCount = m_attributeNames.count();
     m_selectedFeatureIndex = -1;
 
