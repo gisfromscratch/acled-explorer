@@ -23,10 +23,14 @@ using namespace Esri::ArcGISRuntime;
 
 ACLEDExplorer::ACLEDExplorer(QQuickItem* parent /* = nullptr */):
     QQuickItem(parent),
-    m_acledLayerSoure(new AcledLayerSource(this))
+    m_acledLayerSoure(new AcledLayerSource(this)),
+    m_navigatingTimer(new QTimer(this))
 {
+    m_navigatingTimer->setSingleShot(true);
+
     connect(m_acledLayerSoure, &AcledLayerSource::layerLoaded, this, &ACLEDExplorer::featureTableModelChanged);
     connect(m_acledLayerSoure->featureTableModel(), &FeatureTableModel::featureSelectionChanged, this, &ACLEDExplorer::featureTableSelectionChanged);
+    connect(m_navigatingTimer, &QTimer::timeout, this, &ACLEDExplorer::navigatingFinished);
 }
 
 ACLEDExplorer::~ACLEDExplorer()
@@ -92,13 +96,24 @@ void ACLEDExplorer::navigatingChanged()
     if (m_navigating)
     {
         // Start navigating
+        //m_navigatingTimer->stop();
     }
     else
     {
-        // Finshed navigating
-        Viewpoint currentViewpoint = m_mapView->currentViewpoint(ViewpointType::BoundingGeometry);
-        Geometry envelope = currentViewpoint.targetGeometry();
-        FeatureTableModel* featureTableModel = m_acledLayerSoure->featureTableModel();
-        featureTableModel->setSpatialFilter(envelope);
+        // Finished navigating and wait for no changes
+        //m_navigatingTimer->start(300);
+
+        // TODO: Filters the feature table like crazy!
+        //navigatingFinished();
     }
+}
+
+void ACLEDExplorer::navigatingFinished()
+{
+    // Finished navigating
+    Viewpoint currentViewpoint = m_mapView->currentViewpoint(ViewpointType::BoundingGeometry);
+    Geometry envelope = currentViewpoint.targetGeometry();
+    FeatureTableModel* featureTableModel = m_acledLayerSoure->featureTableModel();
+    featureTableModel->setSpatialFilter(envelope);
+    //qDebug() << "Spatial filter updated";
 }

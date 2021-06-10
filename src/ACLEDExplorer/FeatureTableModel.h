@@ -73,6 +73,7 @@ private:
 
     QHash<int, QByteArray> m_roleNames;
     Esri::ArcGISRuntime::FeatureTable* m_featureTable = nullptr;
+    QString m_oidFieldName;
     QList<Esri::ArcGISRuntime::Feature*> m_features;
     Esri::ArcGISRuntime::Geometry m_spatialFilter;
     QStringList m_attributeNames;

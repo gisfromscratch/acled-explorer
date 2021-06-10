@@ -187,6 +187,35 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
     // Updated the whole model
     beginResetModel();
 
+    if (m_oidFieldName.isEmpty())
+    {
+        // Obtain the OID field name
+        const QList<Field>& fields = m_featureTable->fields();
+        for (const Field& field : fields)
+        {
+            switch (field.fieldType())
+            {
+                case FieldType::OID:
+                    m_oidFieldName = field.name();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    // Obtain the feature OID from the selected feature
+    qint64 selectedOid = -1;
+    if (-1 != m_selectedFeatureIndex && !m_oidFieldName.isEmpty())
+    {
+        AttributeListModel* attributes = m_features[m_selectedFeatureIndex]->attributes();
+        if (attributes->containsAttribute(m_oidFieldName))
+        {
+            selectedOid = attributes->attributeValue(m_oidFieldName).toLongLong();
+        }
+    }
+
     // Delete old features
     if (!m_features.empty())
     {
@@ -204,19 +233,36 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
         if (0 == m_featureCount)
         {
             m_attributeNames.clear();
+            m_selectedFeatureIndex = -1;
         }
         else
         {
             m_attributeNames = m_features[0]->attributes()->attributeNames();
+
+            // Find the last selected feature
+            m_selectedFeatureIndex = -1;
+            qint64 featureIndex = 0;
+            const QList<Feature*>& features = m_features;
+            for (const Feature* feature : features)
+            {
+                qint64 oid = feature->attributes()->attributeValue(m_oidFieldName).toLongLong();
+                if (selectedOid == oid)
+                {
+                    m_selectedFeatureIndex = featureIndex;
+                    qDebug() << "OID found";
+                    break;
+                }
+                featureIndex++;
+            }
         }
     }
     else
     {
         m_attributeNames.clear();
+        m_selectedFeatureIndex = -1;
     }
 
     m_attributeCount = m_attributeNames.count();
-    m_selectedFeatureIndex = -1;
 
     endResetModel();
 }

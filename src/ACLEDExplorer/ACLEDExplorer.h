@@ -14,6 +14,7 @@
 #define ACLEDEXPLORER_H
 
 #include <QQuickItem>
+#include <QTimer>
 
 namespace Esri
 {
@@ -47,11 +48,13 @@ signals:
 private slots:
     void featureTableSelectionChanged();
     void navigatingChanged();
+    void navigatingFinished();
 
 private:
-    Esri::ArcGISRuntime::Map *m_map = nullptr;
-    Esri::ArcGISRuntime::MapQuickView *m_mapView = nullptr;
-    AcledLayerSource *m_acledLayerSoure = nullptr;
+    Esri::ArcGISRuntime::Map* m_map = nullptr;
+    Esri::ArcGISRuntime::MapQuickView* m_mapView = nullptr;
+    AcledLayerSource* m_acledLayerSoure = nullptr;
+    QTimer* m_navigatingTimer = nullptr;
     bool m_navigating = false;
 };
 
