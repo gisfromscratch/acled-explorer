@@ -32,18 +32,19 @@
 
 using namespace Esri::ArcGISRuntime;
 
-static const bool useManualCaching = true;
+static const bool useManualCaching = false;
 
 AcledLayerSource::AcledLayerSource(QObject *parent) : QObject(parent)
 {
-    m_acledFeatureTable = new ServiceFeatureTable(QUrl("https://services.arcgis.com/LG9Yn2oFqZi5PnO5/arcgis/rest/services/Armed_Conflict_Location_Event_Data_ACLED/FeatureServer/0"), this);
+    m_acledFeatureTable = new ServiceFeatureTable(QUrl("https://services.arcgis.com/LG9Yn2oFqZi5PnO5/arcgis/rest/services/Armed_Conflict_Location_Event_Data_ACLED/FeatureServer/1"), this);
+    connect(m_acledFeatureTable, &ServiceFeatureTable::populateFromServiceCompleted, this, &AcledLayerSource::populateFromServiceCompleted);
     connect(m_acledFeatureTable, &ServiceFeatureTable::doneLoading, this, &AcledLayerSource::doneLoading);
     if (useManualCaching)
     {
         m_acledFeatureTable->setFeatureRequestMode(FeatureRequestMode::ManualCache);
         QueryParameters queryAll;
         queryAll.setWhereClause("1=1");
-        queryAll.setMaxFeatures(std::numeric_limits<int>().max());
+        //queryAll.setMaxFeatures(std::numeric_limits<int>().max());
         m_acledFeatureTable->populateFromService(queryAll, true, QStringList { "*" });
     }
     m_acledFeatureLayer = new FeatureLayer(m_acledFeatureTable, this);
@@ -81,5 +82,35 @@ void AcledLayerSource::featureTableSelectionChanged()
     if (!selectedFeatures.empty())
     {
         m_acledFeatureLayer->selectFeatures(selectedFeatures);
+    }
+}
+
+void AcledLayerSource::populateFromServiceCompleted(QUuid taskId, Esri::ArcGISRuntime::FeatureQueryResult* featureQueryResult)
+{
+    Q_UNUSED(taskId)
+
+    if (nullptr == featureQueryResult)
+    {
+        qWarning() << "Feature query result is invalid!";
+        return;
+    }
+
+    std::unique_ptr<FeatureQueryResult> featuresQueryResultPtr(featureQueryResult);
+    FeatureIterator featureIterator = featuresQueryResultPtr->iterator();
+    if (featureIterator.hasNext())
+    {
+        // Count the returned features and updates the result offset
+        QList<Feature*> features = featureIterator.features();
+        int featureCount = features.size();
+        m_acledFeatureOffset += featureCount;
+        if (featuresQueryResultPtr->isTransferLimitExceeded())
+        {
+            qDebug() << "Transfer limit exceeded requery using result offset " << m_acledFeatureOffset;
+            QueryParameters queryAll;
+            queryAll.setWhereClause("1=1");
+            queryAll.setResultOffset(m_acledFeatureOffset);
+            m_acledFeatureTable->populateFromService(queryAll, false, QStringList { "*" });
+        }
+        qDeleteAll(features);
     }
 }

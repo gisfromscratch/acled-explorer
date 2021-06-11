@@ -101,10 +101,10 @@ void ACLEDExplorer::navigatingChanged()
     else
     {
         // Finished navigating and wait for no changes
-        //m_navigatingTimer->start(300);
+        m_navigatingTimer->start(300);
 
         // TODO: Filters the feature table like crazy!
-        navigatingFinished();
+        //navigatingFinished();
     }
 }
 

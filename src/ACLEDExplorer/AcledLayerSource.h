@@ -26,6 +26,7 @@
 #define ACLEDLAYERSOURCE_H
 
 #include <QObject>
+#include <QUuid>
 
 #include "Error.h"
 
@@ -34,6 +35,7 @@ namespace Esri
 namespace ArcGISRuntime
 {
 class FeatureLayer;
+class FeatureQueryResult;
 class ServiceFeatureTable;
 }
 }
@@ -55,11 +57,13 @@ signals:
 private slots:
     void doneLoading(Esri::ArcGISRuntime::Error loadError);
     void featureTableSelectionChanged();
+    void populateFromServiceCompleted(QUuid taskId, Esri::ArcGISRuntime::FeatureQueryResult* featureQueryResult);
 
 private:
-    Esri::ArcGISRuntime::FeatureLayer *m_acledFeatureLayer = nullptr;
-    Esri::ArcGISRuntime::ServiceFeatureTable *m_acledFeatureTable = nullptr;
-    FeatureTableModel *m_acledFeatureTableModel = nullptr;
+    Esri::ArcGISRuntime::FeatureLayer* m_acledFeatureLayer = nullptr;
+    Esri::ArcGISRuntime::ServiceFeatureTable* m_acledFeatureTable = nullptr;
+    FeatureTableModel* m_acledFeatureTableModel = nullptr;
+    int m_acledFeatureOffset = 0;
 };
 
 #endif // ACLEDLAYERSOURCE_H

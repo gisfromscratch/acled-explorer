@@ -233,6 +233,7 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
     {
         m_features = featureIterator.features(this);
         m_featureCount = m_features.count();
+        //qDebug() << "Feature count " << m_featureCount;
         if (0 == m_featureCount)
         {
             m_attributeNames.clear();
