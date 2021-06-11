@@ -64,6 +64,8 @@ void ACLEDExplorer::componentComplete()
 
 void ACLEDExplorer::featureTableSelectionChanged()
 {
+    // TODO: Smooth navigating to the selected features
+    /*
     const QList<Feature*> selectedFeatures = m_acledLayerSoure->featureTableModel()->selectedFeatures();
     if (!selectedFeatures.empty())
     {
@@ -88,6 +90,7 @@ void ACLEDExplorer::featureTableSelectionChanged()
             }
         }
     }
+    */
 }
 
 void ACLEDExplorer::navigatingChanged()
@@ -96,7 +99,7 @@ void ACLEDExplorer::navigatingChanged()
     if (m_navigating)
     {
         // Start navigating
-        //m_navigatingTimer->stop();
+        m_navigatingTimer->stop();
     }
     else
     {
