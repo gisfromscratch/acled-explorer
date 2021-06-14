@@ -68,6 +68,7 @@ private slots:
     void queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime::FeatureQueryResult *featureQueryResult);
 
 private:
+    QString oidFieldName();
     void queryAllFeatures();
     void queryFeaturesUsingSpatialFilter();
 
@@ -81,6 +82,7 @@ private:
     int m_attributeCount = 0;
     qint64 m_featureCount = 0;
     qint64 m_selectedFeatureIndex = -1;
+    qint64 m_selectedOid = -1;
 };
 
 #endif // FEATURETABLEMODEL_H

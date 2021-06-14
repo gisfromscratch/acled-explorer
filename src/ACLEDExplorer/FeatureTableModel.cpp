@@ -113,6 +113,29 @@ QHash<int, QByteArray> FeatureTableModel::roleNames() const
     return m_roleNames;
 }
 
+QString FeatureTableModel::oidFieldName()
+{
+    if (m_oidFieldName.isEmpty())
+    {
+        // Obtain the OID field name
+        const QList<Field>& fields = m_featureTable->fields();
+        for (const Field& field : fields)
+        {
+            switch (field.fieldType())
+            {
+                case FieldType::OID:
+                    m_oidFieldName = field.name();
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
+
+    return m_oidFieldName;
+}
+
 void FeatureTableModel::setSelectedFeature(qint64 selectedFeatureIndex)
 {
     qint64 lastSelectedFeatureIndex = m_selectedFeatureIndex;
@@ -126,6 +149,20 @@ void FeatureTableModel::setSelectedFeature(qint64 selectedFeatureIndex)
     {
         // Update all cells from the new selected feature
         emit dataChanged(index(m_selectedFeatureIndex, 0), index(m_selectedFeatureIndex, m_attributeCount - 1));
+    }
+
+    QString idFieldName = oidFieldName();
+    if (!idFieldName.isEmpty())
+    {
+        // Obtain the feature OID from the selected feature
+        if (-1 != m_selectedFeatureIndex)
+        {
+            AttributeListModel* attributes = m_features[m_selectedFeatureIndex]->attributes();
+            if (attributes->containsAttribute(idFieldName))
+            {
+                m_selectedOid = attributes->attributeValue(idFieldName).toLongLong();
+            }
+        }
     }
 
     // Emit the selection changed event
@@ -194,35 +231,6 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
     // Updated the whole model
     beginResetModel();
 
-    if (m_oidFieldName.isEmpty())
-    {
-        // Obtain the OID field name
-        const QList<Field>& fields = m_featureTable->fields();
-        for (const Field& field : fields)
-        {
-            switch (field.fieldType())
-            {
-                case FieldType::OID:
-                    m_oidFieldName = field.name();
-                    break;
-
-                default:
-                    break;
-            }
-        }
-    }
-
-    // Obtain the feature OID from the selected feature
-    qint64 selectedOid = -1;
-    if (-1 != m_selectedFeatureIndex && !m_oidFieldName.isEmpty())
-    {
-        AttributeListModel* attributes = m_features[m_selectedFeatureIndex]->attributes();
-        if (attributes->containsAttribute(m_oidFieldName))
-        {
-            selectedOid = attributes->attributeValue(m_oidFieldName).toLongLong();
-        }
-    }
-
     // Delete old features
     if (!m_features.empty())
     {
@@ -233,6 +241,7 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
     // Update new features and counts
     std::unique_ptr<FeatureQueryResult> featuresQueryResultPtr(featureQueryResult);
     FeatureIterator featureIterator = featuresQueryResultPtr->iterator();
+    m_selectedFeatureIndex = -1;
     if (featureIterator.hasNext())
     {
         m_features = featureIterator.features(this);
@@ -241,33 +250,36 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
         if (0 == m_featureCount)
         {
             m_attributeNames.clear();
-            m_selectedFeatureIndex = -1;
         }
         else
         {
             m_attributeNames = m_features[0]->attributes()->attributeNames();
-
-            // Find the last selected feature
-            m_selectedFeatureIndex = -1;
-            qint64 featureIndex = 0;
-            const QList<Feature*>& features = m_features;
-            for (const Feature* feature : features)
+            if (-1 != m_selectedOid)
             {
-                qint64 oid = feature->attributes()->attributeValue(m_oidFieldName).toLongLong();
-                if (selectedOid == oid)
+                // Find the last selected feature
+                QString idFieldName = oidFieldName();
+                if (!idFieldName.isEmpty())
                 {
-                    m_selectedFeatureIndex = featureIndex;
-                    qDebug() << "OID found";
-                    break;
+                    qint64 featureIndex = 0;
+                    const QList<Feature*>& features = m_features;
+                    for (const Feature* feature : features)
+                    {
+                        qint64 oid = feature->attributes()->attributeValue(idFieldName).toLongLong();
+                        if (m_selectedOid == oid)
+                        {
+                            m_selectedFeatureIndex = featureIndex;
+                            qDebug() << "OID found";
+                            break;
+                        }
+                        featureIndex++;
+                    }
                 }
-                featureIndex++;
             }
         }
     }
     else
     {
         m_attributeNames.clear();
-        m_selectedFeatureIndex = -1;
     }
 
     m_attributeCount = m_attributeNames.count();
