@@ -53,7 +53,9 @@ TableView {
     model: featureTableModel
 
     ScrollBar.horizontal: ScrollBar{}
-    ScrollBar.vertical: ScrollBar{}
+    ScrollBar.vertical: ScrollBar {
+        id: tableViewVerticalScrollBar
+    }
     clip: true
     delegate: Label {
         //width: 60
@@ -93,6 +95,13 @@ TableView {
 
         Component.onCompleted: {
             updateColumnWidth(model.column, this.implicitWidth);
+
+            // When the table model is resetted, scroll to the top
+            var scrollBar = tableViewVerticalScrollBar;
+            featureTableModel.modelReset.connect(function() {
+                //console.log("CHANGED");
+                scrollBar.setPosition(0);
+            });
         }
     }
 

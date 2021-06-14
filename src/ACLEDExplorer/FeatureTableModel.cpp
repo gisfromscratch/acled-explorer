@@ -155,14 +155,14 @@ void FeatureTableModel::queryAllFeatures()
 {
     QueryParameters queryAllFeaturesParameters;
     queryAllFeaturesParameters.setWhereClause("1=1");
-    m_featureTable->queryFeatures(queryAllFeaturesParameters);
+    m_lastQueryTaskId = m_featureTable->queryFeatures(queryAllFeaturesParameters).taskId();
 }
 
 void FeatureTableModel::queryFeaturesUsingSpatialFilter()
 {
     QueryParameters queryFeaturesParameters;
     queryFeaturesParameters.setGeometry(m_spatialFilter);
-    m_featureTable->queryFeatures(queryFeaturesParameters);
+    m_lastQueryTaskId = m_featureTable->queryFeatures(queryFeaturesParameters).taskId();
 }
 
 void FeatureTableModel::doneLoading(Error loadError)
@@ -176,13 +176,20 @@ void FeatureTableModel::doneLoading(Error loadError)
 
 void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime::FeatureQueryResult *featureQueryResult)
 {
-    Q_UNUSED(taskId)
+    if (m_lastQueryTaskId != taskId)
+    {
+        // New query features was already scheduled
+        qDebug() << "Feature query result is obsolete!";
+        return;
+    }
 
     if (nullptr == featureQueryResult)
     {
         qWarning() << "Feature query result is invalid!";
         return;
     }
+
+    qDebug() << "Query features completed...";
 
     // Updated the whole model
     beginResetModel();
@@ -266,4 +273,6 @@ void FeatureTableModel::queryFeaturesCompleted(QUuid taskId, Esri::ArcGISRuntime
     m_attributeCount = m_attributeNames.count();
 
     endResetModel();
+
+    qDebug() << "Feature table model updated.";
 }

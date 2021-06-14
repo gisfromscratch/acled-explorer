@@ -76,6 +76,7 @@ private:
     QString m_oidFieldName;
     QList<Esri::ArcGISRuntime::Feature*> m_features;
     Esri::ArcGISRuntime::Geometry m_spatialFilter;
+    QUuid m_lastQueryTaskId;
     QStringList m_attributeNames;
     int m_attributeCount = 0;
     qint64 m_featureCount = 0;
