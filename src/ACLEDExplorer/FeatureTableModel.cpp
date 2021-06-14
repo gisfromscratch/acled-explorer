@@ -169,6 +169,11 @@ void FeatureTableModel::setSelectedFeature(qint64 selectedFeatureIndex)
     emit featureSelectionChanged();
 }
 
+qint64 FeatureTableModel::selectedFeatureIndex() const
+{
+    return m_selectedFeatureIndex;
+}
+
 QList<Feature*> FeatureTableModel::selectedFeatures() const
 {
     QList<Feature*> selectedFeatures;

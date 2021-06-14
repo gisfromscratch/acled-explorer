@@ -52,6 +52,20 @@ TableView {
 
     model: featureTableModel
 
+    function scrollTo(index) {
+        tableViewVerticalScrollBar.setPosition(0);
+        /* TODO: Try to reimplement positionViewAtRow
+        var rowHeight = 60;
+        var featureCount = featureTableModel.rowCount();
+        if (index < 0 || featureCount < 0) {
+
+        }
+        else {
+            tableViewVerticalScrollBar.setPosition(1.0 * index / featureCount);
+        }
+        */
+    }
+
     ScrollBar.horizontal: ScrollBar{}
     ScrollBar.vertical: ScrollBar {
         id: tableViewVerticalScrollBar
@@ -97,10 +111,12 @@ TableView {
             updateColumnWidth(model.column, this.implicitWidth);
 
             // When the table model is resetted, scroll to the top
-            var scrollBar = tableViewVerticalScrollBar;
+            var featureTableView = tableView;
+            var tableModel = featureTableModel;
             featureTableModel.modelReset.connect(function() {
                 //console.log("CHANGED");
-                scrollBar.setPosition(0);
+                var selectedFeatureIndex = tableModel.selectedFeatureIndex();
+                featureTableView.scrollTo(selectedFeatureIndex);
             });
         }
     }

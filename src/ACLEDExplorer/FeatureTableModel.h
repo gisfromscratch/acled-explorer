@@ -56,6 +56,7 @@ public:
     QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE void setSelectedFeature(qint64 selectedFeatureIndex);
+    Q_INVOKABLE qint64 selectedFeatureIndex() const;
     QList<Esri::ArcGISRuntime::Feature*> selectedFeatures() const;
 
     void setSpatialFilter(const Esri::ArcGISRuntime::Geometry& spatialFilter);
